@@ -1,0 +1,116 @@
+<!-- This is a BYO API key situation; visit http://hearthstoneapi.com/ to obtain your own -->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Lore Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: cornflowerblue;
+            color: whitesmoke;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-flow: column;
+        }
+
+        input {
+            margin-bottom: 10px;
+
+        }
+
+        img:hover {
+            cursor: pointer;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        img:active {
+            cursor: pointer;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19) inset;
+        }
+
+        #demo {
+            display: inline-flex;
+            overflow-x: scroll;
+            padding: 20px;
+            width: 80%;
+        }
+
+        #loreBox{
+            width: 600px;
+            height: 200px;
+            font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            font-size: 24px;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+    <h4>The Lore Explorer</h4>
+    <p>Search the Hearthstone databases for a minion, then click the card to read its lore.</p>
+    <input type="text" id="queryBox" placeholder="">
+    <button onclick="searchCards()">Search Minions</button>
+    <div id="demo"></div>
+    <div id="loreBox"></div>
+</body>
+<script>
+
+var data = null
+
+function searchCards() {
+
+    demo.innerHTML = " "
+    loreBox.innerHTML = " "
+    var query = queryBox.value
+    var xhr = new XMLHttpRequest()
+    xhr.withCredentials = true
+
+    xhr.addEventListener("readystatechange", function() {
+        if (this.readyState === 4) {
+            resp = JSON.parse(this.responseText)
+            console.log(resp)
+            for (let i = 0; i < resp.length; i++) {
+                if (resp[i].type == "Minion") {
+                    pic = document.createElement('img')
+                    pic.src = resp[i].img
+                    pic.alt = "No image in HearthStone DataBase : ("
+                    pic.addEventListener("error", brokenPic)
+                    pic.addEventListener("click", showBody)
+                    pic.lore = resp[i].flavor
+                    demo.appendChild(pic)
+                }
+            }
+        }
+    })
+
+    xhr.open("GET", `https://omgvamp-hearthstone-v1.p.mashape.com/cards/search/${query}`)
+    xhr.setRequestHeader("X-Mashape-Key", "YOUR API KEY GOES HERE")
+    xhr.setRequestHeader("Accept", "application/json")
+
+    xhr.send(data)
+
+    xhr.onloadend = function() {
+    if(xhr.status == 404) 
+        alert("No minions found matching these search terms")
+    }
+}
+
+function brokenPic() {
+    event.target.style.display = "none"
+}
+
+function showBody() {
+    if (event.target.lore != null) {
+        loreBox.innerHTML = event.target.lore
+    } else {
+        loreBox.innerHTML = "No lore reported for this minion"
+    }
+}
+
+</script>
+</html>
