@@ -80,6 +80,7 @@ $contents = (string) $response->getBody();
     }
 
     function showBody() {
+        loreBox.innerHTML = " "
         if (event.target.lore != null) {
             loreBox.innerHTML = event.target.lore
         } else {
