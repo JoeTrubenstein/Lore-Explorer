@@ -60,7 +60,12 @@ $contents = (string) $response->getBody();
         for (let i = 0; i < resp.length; i++) {
             if (resp[i].type == "Minion") {
                 pic = document.createElement('img')
-                pic.src = resp[i].img
+                let picUrl = resp[i].img
+                if (picUrl.charAt(4)!="s") {
+                    console.log("mixed security image")
+                    let suffix = picUrl.substring(4)
+                    pic.src = "https" + suffix
+                }
                 pic.alt = "No image in HearthStone DataBase : ("
                 pic.addEventListener("error", brokenPic)
                 pic.addEventListener("click", showBody)
